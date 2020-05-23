@@ -119,5 +119,5 @@ introSpect.flowNodes.channelNodes(*nodes, main_kws=main_kws, location=location+'
 
 ## captureIntoNotebook
 A modul that converts a given function into a notebook in markdown format. The motivation beind this is that figures often have to be modified slightly: change colorpalette, size or the order of categories. If this is requested, the easiest way is to go back to an analysis step where the data is already processed and only the plotting function has to be rerun.  
-Keeping datatable, the code for plotting and the figure together in markdown is inspired by both R markdown and [ipymd] (https://github.com/grst/reportsrender), but in this case the notebook is not being run during pipeline execution, just saved for the record and the main report file is also not derived from the notebook. 
+Keeping datatable, the code for plotting and the figure together in markdown is inspired by both R markdown and [ipymd](https://github.com/grst/reportsrender), but in this case the notebook is not being run during pipeline execution, just saved for the record and the main report file is also not derived from the notebook. 
 
