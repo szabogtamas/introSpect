@@ -12,7 +12,7 @@ Key issues adressed are:
 - automatically generating a nextflow pipeline from process objects
 
 ## commandLines
-Inspired by [Pthyon fire](https://github.com/google/python-fire), but tailored to personal needs. Ensures that documentation is added to every reincarnation of the script, let it be imported, called from command line or integrated into a Nextflow pipeline.  
+Inspired by [Python fire](https://github.com/google/python-fire), but tailored to personal needs. Ensures that documentation is added to every reincarnation of the script, let it be imported, called from command line or integrated into a Nextflow pipeline.  
 A minimal example below involves a function that is to be executed when the script is called from command line and the `main` function specifying what should be exposed to the commannd line and how to handle outputs.
 
 ```python
