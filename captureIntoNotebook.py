@@ -47,7 +47,7 @@ def turnInNotebook(function_to_capture: str,
     s = '# '+ notebooktitle + '  \n  \n'
     s += textwrap.dedent(target.process.__doc__.replace('\n', '  \n'))
     s += '\n  ## Imports and parameters  \n  \n'
-    importblock = '```python\n%matplotlib notebook\n\nimport matplotlib.pyplot as plt\n'
+    importblock = '```python\n%matplotlib inline\n\nimport matplotlib.pyplot as plt\n'
     imports = ' '.join(imports.split(' '))
     imports = imports.split('\n')
     for i in imports:
