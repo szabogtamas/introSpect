@@ -5,7 +5,8 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 from typing import Union, Callable, Sequence, List, Tuple
 
-class cmdConnect():
+
+class cmdConnect:
     """
     Exposes a Python function by creating command line arguments for function parameters automatically.
 
@@ -30,10 +31,8 @@ class cmdConnect():
     """
 
     def __init__(
-        self,
-        fun: Callable,
-        paramtune: Union[None, dict] = None,
-        ):
+        self, fun: Callable, paramtune: Union[None, dict] = None,
+    ):
         """
         Adds parameters of the function to argparse.
         Sets output files if needed.
@@ -50,19 +49,32 @@ class cmdConnect():
             The remaining elements inbetween will be passed as positional arguments (alternative names for the parameter).
         """
 
-        finetuned = {"self": (0, "--denied", {"dest": "self", 'default': None, "help": "A mock switch to prevent self of a function defined in an object get exposed.",},)}
+        finetuned = {
+            "self": (
+                0,
+                "--denied",
+                {
+                    "dest": "self",
+                    "default": None,
+                    "help": "A mock switch to prevent self of a function defined in an object get exposed.",
+                },
+            )
+        }
         if paramtune is None:
             paramtune = dict()
         finetuned.update(paramtune)
         paramtune = finetuned.copy()
         argreverse = dict()
-        
+
         # Collect information on the master function and its parameters
         doc = self.parseDocstring(fun)
-        pars = doc['params']
+        pars = doc["params"]
 
         spect = inspect.getfullargspec(fun)
-        parser = argparse.ArgumentParser(description=doc['description'], formatter_class=argparse.RawTextHelpFormatter)
+        parser = argparse.ArgumentParser(
+            description=doc["description"],
+            formatter_class=argparse.RawTextHelpFormatter,
+        )
 
         arglist = list()
         if isinstance(spect.args, list):
@@ -72,33 +84,55 @@ class cmdConnect():
         if isinstance(spect.kwonlyargs, list):
             arglist += spect.kwonlyargs
         pardef = spect.kwonlydefaults
-        
+
         # Add version and an option that shows what is the master function and what other functions are defined in the script
-        long_doc = 'The master function:\n\n'
-        long_doc += fun.__name__+'\n'
-        long_doc += fun.__doc__+'\n\n\n'
-        long_doc += 'The helper functions:\n\n'
-        for n, f in [o for o in inspect.getmembers(inspect.getmodule(fun)) if inspect.isfunction(o[1])]:
-            if n not in ['main', fun.__name__]:
-                long_doc += n+'\n'
+        long_doc = "The master function:\n\n"
+        long_doc += fun.__name__ + "\n"
+        long_doc += fun.__doc__ + "\n\n\n"
+        long_doc += "The helper functions:\n\n"
+        for n, f in [
+            o
+            for o in inspect.getmembers(inspect.getmodule(fun))
+            if inspect.isfunction(o[1])
+        ]:
+            if n not in ["main", fun.__name__]:
+                long_doc += n + "\n"
                 dc = f.__doc__
                 if dc is None:
-                    dc = ''
-                long_doc += dc+'\n\n\n'
-        
+                    dc = ""
+                long_doc += dc + "\n\n\n"
+
         try:
-            parser.add_argument('-version', '--version', action='version', version=inspect.getmodule(fun).__version__, help='Displays script version if supplied')
+            parser.add_argument(
+                "-version",
+                "--version",
+                action="version",
+                version=inspect.getmodule(fun).__version__,
+                help="Displays script version if supplied",
+            )
         except:
             pass
-        parser.add_argument('-i', '--inspect', action='version', version=long_doc, help='Shows what functions are defined')
+        parser.add_argument(
+            "-i",
+            "--inspect",
+            action="version",
+            version=long_doc,
+            help="Shows what functions are defined",
+        )
 
         # Add a switch to peek into the results by printing or saving the first N lines only
-        parser.add_argument('-p', '--peek', dest='displayMax', type=lambda s: [x for x in s.split(',')], help='Peek into the results by printing or saving the first N lines only')
-        parser.register('action', 'exappend', self.ExtendAction)
+        parser.add_argument(
+            "-p",
+            "--peek",
+            dest="displayMax",
+            type=lambda s: [x for x in s.split(",")],
+            help="Peek into the results by printing or saving the first N lines only",
+        )
+        parser.register("action", "exappend", self.ExtendAction)
 
         # Add an instance for every parameter of the master function to the main argparse parser
         for p in arglist:
-            help_msg = ''
+            help_msg = ""
             if p in pars:
                 help_msg = pars[p]
             tune = False
@@ -116,57 +150,62 @@ class cmdConnect():
                 else:
                     kwargs = dict()
                     args = t[1:]
-                if 'help' not in kwargs:
-                    kwargs['help'] = help_msg
-                if 'default' not in kwargs:
+                if "help" not in kwargs:
+                    kwargs["help"] = help_msg
+                if "default" not in kwargs:
                     if spect.kwonlydefaults is not None:
                         if p in spect.kwonlydefaults:
-                            kwargs['default'] = spect.kwonlydefaults[p]
-                if 'type' not in kwargs:
+                            kwargs["default"] = spect.kwonlydefaults[p]
+                if "type" not in kwargs:
                     if p in spect.annotations:
                         tp = spect.annotations[p]
                         if tp in (int, float, list, tuple):
-                            kwargs['type'] = tp
+                            kwargs["type"] = tp
                         else:
                             try:
                                 if list in tp.__args__:
-                                    kwargs['type'] = list
+                                    kwargs["type"] = list
                             except:
                                 pass
                 # Solve the comma or space problem
-                if 'type' in kwargs:
-                    if kwargs['type'] in [list, tuple, 'str_list', 'int_list', 'float_list']:
-                        if 'nargs' not in kwargs:
-                            kwargs['nargs'] = '*'
-                        if 'action' not in kwargs:
-                            kwargs['action'] = 'exappend'
-                            if 'default' in kwargs:
-                                if kwargs['default'] is not None:
-                                    kwargs['default'] = []
-                        if kwargs['type'] in ['int_list', 'float_list']:
-                            if kwargs['type'] == 'int_list':
-                                kwargs['type'] = self.intSplitter
+                if "type" in kwargs:
+                    if kwargs["type"] in [
+                        list,
+                        tuple,
+                        "str_list",
+                        "int_list",
+                        "float_list",
+                    ]:
+                        if "nargs" not in kwargs:
+                            kwargs["nargs"] = "*"
+                        if "action" not in kwargs:
+                            kwargs["action"] = "exappend"
+                            if "default" in kwargs:
+                                if kwargs["default"] is not None:
+                                    kwargs["default"] = []
+                        if kwargs["type"] in ["int_list", "float_list"]:
+                            if kwargs["type"] == "int_list":
+                                kwargs["type"] = self.intSplitter
                             else:
-                                kwargs['type'] = self.floatSplitter
+                                kwargs["type"] = self.floatSplitter
                         else:
-                            kwargs['type'] = lambda s: s.split(',')
-                if 'default' in kwargs and len(t) < 3:
-                    kwargs['dest'] = p
-                    args[0] = '--' + p
-                if 'dest' in kwargs:
-                    argreverse[kwargs['dest']] = args[0] + ' '
+                            kwargs["type"] = lambda s: s.split(",")
+                if "default" in kwargs and len(t) < 3:
+                    kwargs["dest"] = p
+                    args[0] = "--" + p
+                if "dest" in kwargs:
+                    argreverse[kwargs["dest"]] = args[0] + " "
                 else:
-                    argreverse[args[0]] = ''
+                    argreverse[args[0]] = ""
                 parser.add_argument(*args, **kwargs)
             else:
                 parser.add_argument(p, help=help_msg)
-                argreverse[args[0]] = ''
-            
-        
+                argreverse[args[0]] = ""
+
         # Parameters defined in the finetune dictionary, but not belonging to the master input, are assumed to belong to the output
         returnlen = 1
         outnames = dict()
-        for remaining in set(paramtune.keys()) - set(arglist + ['self']):
+        for remaining in set(paramtune.keys()) - set(arglist + ["self"]):
             t = paramtune[remaining]
             o = t[0]
             if t[1] is None:
@@ -179,18 +218,18 @@ class cmdConnect():
                 else:
                     kwargs = dict()
                     args = t[1:]
-                if 'dest' in kwargs:
-                    outnames[o] = kwargs['dest']
+                if "dest" in kwargs:
+                    outnames[o] = kwargs["dest"]
                 else:
                     outnames[o] = args[0]
                 if o > returnlen:
                     returnlen = o
                 parser.add_argument(*args, **kwargs)
-        
+
         rl = []
         for i in range(returnlen):
-            rl.append([outnames.pop(i+1, None), None])
-            
+            rl.append([outnames.pop(i + 1, None), None])
+
         # Bind information that might be reused later to the object
         self.fun = fun
         self.doc = doc
@@ -199,11 +238,12 @@ class cmdConnect():
         self.cmd_args = parser
         self.argreverse = argreverse
         self.results = rl
-    
+
     class ExtendAction(argparse.Action):
         """
         Redefine the extension module of Argparse to support multiple list notations in command line.
         """
+
         def __call__(self, parser, namespace, values, option_string=None):
             items = getattr(namespace, self.dest) or []
             if type(items) is not list:
@@ -212,12 +252,11 @@ class cmdConnect():
                 items += v
             setattr(namespace, self.dest, items)
 
-
     def eval(self):
         """
         Run the master function and store its results.
         """
-        
+
         self.args, rest = self.cmd_args.parse_known_args()
         args, kwargs = [], dict()
         spected = self.spect.args
@@ -251,13 +290,12 @@ class cmdConnect():
                 self.results = [(resfile, rs)]
         return
 
-
     def save(
         self,
         filenames: Union[None, str, list] = None,
         formatfunctions: Union[None, Callable, list] = None,
-        formatargs: Union[None, dict, list] = None
-        ) -> None:
+        formatargs: Union[None, dict, list] = None,
+    ) -> None:
         """
         Save the output of the master function.
 
@@ -275,7 +313,7 @@ class cmdConnect():
 
         if formatfunctions is not None:
             if type(formatfunctions) is Callable:
-                formatfunctions = (formatfunctions)
+                formatfunctions = formatfunctions
         else:
             formatfunctions = []
             for i in range(N):
@@ -283,7 +321,7 @@ class cmdConnect():
 
         if formatargs is not None:
             if type(formatargs) is dict:
-                formatargs = (formatargs)
+                formatargs = formatargs
             else:
                 for i in range(N):
                     if formatargs[i] is None:
@@ -294,18 +332,20 @@ class cmdConnect():
                 formatargs.append(dict())
 
         for i in range(N):
-            o = ''
+            o = ""
             fn, r = self.results[i]
             to_be_written = True
             if fn is not None:
-                if fn[-5:] in '.json':
+                if fn[-5:] in ".json":
                     to_be_written = False
             if to_be_written:
                 if formatfunctions[i] is None:
                     if isinstance(r, (pd.DataFrame, plt.Axes, sns.matrix.ClusterGrid)):
                         pass
                     else:
-                        if isinstance(r, (str, int, float, dict, set, list, tuple, np.ndarray)):
+                        if isinstance(
+                            r, (str, int, float, dict, set, list, tuple, np.ndarray)
+                        ):
                             if isinstance(r, (int, float)):
                                 r = str(r)
                             else:
@@ -313,120 +353,210 @@ class cmdConnect():
                                     if isinstance(r, set):
                                         r = list(r)
                                     row = r[0]
-                                    if isinstance(row, (str, int, float, set, list, tuple, np.ndarray)):
+                                    if isinstance(
+                                        row,
+                                        (str, int, float, set, list, tuple, np.ndarray),
+                                    ):
                                         if isinstance(row, str):
-                                            r = '\n'.join(r)+'\n'
+                                            r = "\n".join(r) + "\n"
                                         else:
                                             if not isinstance(r, np.ndarray):
                                                 r = np.array(r)
                                             r = r.astype(str)
                                             if isinstance(row, (int, float)):
-                                                r = '\n'.join(r)+'\n'
+                                                r = "\n".join(r) + "\n"
                                             else:
-                                                r = '\n'.join(np.apply_along_axis(lambda x: np.asarray('\t'.join(x),dtype=object), 1, r))+'\n'
+                                                r = (
+                                                    "\n".join(
+                                                        np.apply_along_axis(
+                                                            lambda x: np.asarray(
+                                                                "\t".join(x),
+                                                                dtype=object,
+                                                            ),
+                                                            1,
+                                                            r,
+                                                        )
+                                                    )
+                                                    + "\n"
+                                                )
                                     else:
                                         if isinstance(row, dict):
                                             colnames = set()
                                             for d in r:
                                                 colnames.update(d.keys())
                                             colnames = tuple(colnames)
-                                            t = '\t'.join([str(x) for x in colnames]) + '\n'
+                                            t = (
+                                                "\t".join([str(x) for x in colnames])
+                                                + "\n"
+                                            )
                                             for d in r:
-                                                t += '\t'.join([str(d[x]) for x in colnames]) + '\n'
+                                                t += (
+                                                    "\t".join(
+                                                        [str(d[x]) for x in colnames]
+                                                    )
+                                                    + "\n"
+                                                )
                                             r = t
                                         else:
                                             try:
-                                                r = '\n'.join([str(x) for x in r])+'\n'
+                                                r = (
+                                                    "\n".join([str(x) for x in r])
+                                                    + "\n"
+                                                )
                                             except:
-                                                print('No built-in method to save result ['+str(i)+'] of type '+type(r).__name__)
+                                                print(
+                                                    "No built-in method to save result ["
+                                                    + str(i)
+                                                    + "] of type "
+                                                    + type(r).__name__
+                                                )
                                 else:
                                     if isinstance(r, dict):
                                         try:
                                             k, row = r.popitem()
                                             r[k] = row
                                         except:
-                                            row = ''
+                                            row = ""
                                         if isinstance(row, (str, int, float)):
-                                            r = '\n'.join([str(x) + '\t' + str(y) for x, y in r.items()])+'\n'
+                                            r = (
+                                                "\n".join(
+                                                    [
+                                                        str(x) + "\t" + str(y)
+                                                        for x, y in r.items()
+                                                    ]
+                                                )
+                                                + "\n"
+                                            )
                                         else:
-                                            if isinstance(row, (set, list, tuple, np.ndarray)):
-                                                r = '\n'.join([str(x) + '\t' + '\t'.join([str(z) for z in y]) for x, y in r.items()])+'\n'
+                                            if isinstance(
+                                                row, (set, list, tuple, np.ndarray)
+                                            ):
+                                                r = (
+                                                    "\n".join(
+                                                        [
+                                                            str(x)
+                                                            + "\t"
+                                                            + "\t".join(
+                                                                [str(z) for z in y]
+                                                            )
+                                                            for x, y in r.items()
+                                                        ]
+                                                    )
+                                                    + "\n"
+                                                )
                                             else:
                                                 if isinstance(row, dict):
                                                     colnames = set()
                                                     for k, d in r.items():
                                                         colnames.update(d.keys())
                                                     colnames = tuple(colnames)
-                                                    t = '\t'+'\t'.join([str(x) for x in colnames]) + '\n'
+                                                    t = (
+                                                        "\t"
+                                                        + "\t".join(
+                                                            [str(x) for x in colnames]
+                                                        )
+                                                        + "\n"
+                                                    )
                                                     for k, d in r.items():
-                                                        t += k + '\t' + '\t'.join([str(d[x]) for x in colnames]) + '\n'
+                                                        t += (
+                                                            k
+                                                            + "\t"
+                                                            + "\t".join(
+                                                                [
+                                                                    str(d[x])
+                                                                    for x in colnames
+                                                                ]
+                                                            )
+                                                            + "\n"
+                                                        )
                                                     r = t
                                                 else:
                                                     try:
-                                                        r = '\n'.join([str(x) + '\t' + str(y) for x, y in r.items()])+'\n'
+                                                        r = (
+                                                            "\n".join(
+                                                                [
+                                                                    str(x)
+                                                                    + "\t"
+                                                                    + str(y)
+                                                                    for x, y in r.items()
+                                                                ]
+                                                            )
+                                                            + "\n"
+                                                        )
                                                     except:
-                                                        print('No built-in method to save result ['+str(i)+'] of type '+type(row).__name__)        
+                                                        print(
+                                                            "No built-in method to save result ["
+                                                            + str(i)
+                                                            + "] of type "
+                                                            + type(row).__name__
+                                                        )
                         else:
                             try:
                                 r = str(r)
                             except:
-                                print('No built-in method to save result ['+str(i)+'] of type '+type(r).__name__)
+                                print(
+                                    "No built-in method to save result ["
+                                    + str(i)
+                                    + "] of type "
+                                    + type(r).__name__
+                                )
                 else:
                     r = formatfunctions[i](**formatargs[i])
-            if self.args.displayMax is not None and not isinstance(r, plt.Axes, sns.matrix.ClusterGrid):
+            if self.args.displayMax is not None and not isinstance(
+                r, plt.Axes, sns.matrix.ClusterGrid
+            ):
                 rN = self.args.displayMax
                 if isinstance(r, pd.DataFrame):
                     rN = int(rN[0])
                     if rN > 0:
                         r = r.head(rN)
                     else:
-                        r = r.tail(-1*rN)
+                        r = r.tail(-1 * rN)
                 else:
                     if len(rN) == 1:
                         rN = rN[0]
                         rC = None
                     else:
                         rN, rC = rN[:2]
-                    if rC not in ['', None]:
-                        r = r[:int(rC)]
-                    if rN not in ['', None]:
+                    if rC not in ["", None]:
+                        r = r[: int(rC)]
+                    if rN not in ["", None]:
                         rN = int(rN)
-                        r = r.split('\n')[:rN]
-                        r = '\n'.join(r)
-                        if r[-1] != '\n':
-                            r += '\n'
+                        r = r.split("\n")[:rN]
+                        r = "\n".join(r)
+                        if r[-1] != "\n":
+                            r += "\n"
             if fn is None:
                 if isinstance(r, plt.Axes):
-                    print('Figure cannot be displayed')
+                    print("Figure cannot be displayed")
                 else:
                     print(r)
             else:
                 if isinstance(r, (pd.DataFrame, plt.Axes, sns.matrix.ClusterGrid)):
                     if isinstance(r, pd.DataFrame):
-                        r.to_csv(fn, sep='\t')
+                        r.to_csv(fn, sep="\t")
                     else:
                         if isinstance(r, plt.Axes):
-                            if fn.split('.')[-1] in r.figure.canvas.get_supported_filetypes():
+                            if (
+                                fn.split(".")[-1]
+                                in r.figure.canvas.get_supported_filetypes()
+                            ):
                                 r.figure.savefig(fn)
                             else:
-                                r.figure.savefig(fn+'.png')
-                                r.figure.savefig(fn+'.pgf')
+                                r.figure.savefig(fn + ".png")
+                                r.figure.savefig(fn + ".pgf")
                         else:
                             r.savefig(fn)
                 else:
-                    if fn[-5:] == '.json':
-                        with open(fn, 'w') as f:
+                    if fn[-5:] == ".json":
+                        with open(fn, "w") as f:
                             json.dump(r, f)
                     else:
-                        with open(fn, 'w') as f:
+                        with open(fn, "w") as f:
                             f.write(r)
         return
 
-
-    def parseDocstring(
-        self,
-        fun: Callable
-        ) -> dict:
+    def parseDocstring(self, fun: Callable) -> dict:
         """
         Parse the docstring of a function to extract parameter descriptions.
 
@@ -449,8 +579,8 @@ class cmdConnect():
             return "\n".join(l.strip() for l in string.strip().split("\n"))
 
         params = dict()
-        returns = ''
-        short_description, description = '', ''
+        returns = ""
+        short_description, description = "", ""
 
         docstring = fun.__doc__
         docstring = docstring.strip()
@@ -459,7 +589,7 @@ class cmdConnect():
             short_description = lines[0]
 
             if len(lines) > 1:
-                params_returns_desc = ''
+                params_returns_desc = ""
 
                 match = PARAM_OR_RETURNS_REGEX.search(docstring)
                 if match:
@@ -472,7 +602,7 @@ class cmdConnect():
                     returns = reindent(match.group("doc"))
                     long_desc_end = match.start()
                     params_returns_desc = params_returns_desc[:long_desc_end]
-                
+
                 match = PARAMSTART_REGEX.search(params_returns_desc)
                 if match:
                     long_desc_start = match.end()
@@ -485,14 +615,10 @@ class cmdConnect():
             "description": description,
             "short_description": short_description,
             "params": params,
-            "returns": returns
+            "returns": returns,
         }
 
-
-    def intSplitter(
-        self,
-        s: str
-        ) -> list:
+    def intSplitter(self, s: str) -> list:
         """
         Split a string into list of integers.
         Changes NaN to zero.
@@ -508,7 +634,7 @@ class cmdConnect():
         """
 
         l = []
-        for e in s.split(','):
+        for e in s.split(","):
             try:
                 e = int(e)
             except:
@@ -516,11 +642,7 @@ class cmdConnect():
             l.append(e)
         return l
 
-
-    def floatSplitter(
-        self,
-        s: str
-        ) -> list:
+    def floatSplitter(self, s: str) -> list:
         """
         Split a string into list of floats.
         Changes NaN to zero.
@@ -536,7 +658,7 @@ class cmdConnect():
         """
 
         l = []
-        for e in s.split(','):
+        for e in s.split(","):
             try:
                 e = float(e)
             except:
