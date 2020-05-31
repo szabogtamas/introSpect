@@ -530,7 +530,12 @@ def channelNodes(
 def nonCondaCopy(git_packages, inhouse_packages, dr):
     for p in inhouse_packages:
         packdir = p.split("/")[-1]
-        shutil.copytree(p, dr + "/" + packdir, dirs_exist_ok=True, ignore=shutil.ignore_patterns(".*"))
+        shutil.copytree(
+            p,
+            dr + "/" + packdir,
+            dirs_exist_ok=True,
+            ignore=shutil.ignore_patterns(".*"),
+        )
     return
 
 
