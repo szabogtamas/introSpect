@@ -581,10 +581,11 @@ def cleanup(
     location=os.getcwd(),
     nameblacklist=["work", "notebook_files"],
     extensionblacklist=[".log", ".aux", ".bbl", ".bcf", ".blg", ".tex", ".out", "pynb"],
-    locations = None
+    pipeline = True
 ):
-    if locations is None:
-        locations = [location, location + "/pipeline"]
+    locations = [location, location + "/pipeline"]
+    if pipeline:
+        locations.append(location + "/pipeline")
     for location in locations:
         for e in os.listdir(location):
             if e[0] == "." or e in nameblacklist or e[-4:] in extensionblacklist:
