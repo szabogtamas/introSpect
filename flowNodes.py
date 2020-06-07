@@ -580,9 +580,11 @@ def endScriptConneted(f, modified_kws):
 def cleanup(
     location=os.getcwd(),
     nameblacklist=["work", "notebook_files"],
-    extensionblacklist=[".log", ".aux", ".tex", ".out", "pynb"],
+    extensionblacklist=[".log", ".aux", ".bbl", ".bcf", ".blg", ".tex", ".out", "pynb"],
+    locations = None
 ):
-    locations = [location, location + "/pipeline"]
+    if locations is None:
+        locations = [location, location + "/pipeline"]
     for location in locations:
         for e in os.listdir(location):
             if e[0] == "." or e in nameblacklist or e[-4:] in extensionblacklist:
