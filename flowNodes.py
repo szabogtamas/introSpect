@@ -580,10 +580,10 @@ def endScriptConneted(f, modified_kws):
 def cleanup(
     location=os.getcwd(),
     nameblacklist=["work", "notebook_files"],
-    extensionblacklist=[".log", ".aux", ".bbl", ".bcf", ".blg", ".tex", ".out", "pynb"],
-    pipeline = True
+    extensionblacklist=[".log", ".aux", ".toc", ".bbl", ".bcf", ".blg", ".tex", ".out", "pynb"],
+    pipeline=True
 ):
-    locations = [location, location + "/pipeline"]
+    locations = [location]
     if pipeline:
         locations.append(location + "/pipeline")
     for location in locations:
