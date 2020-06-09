@@ -170,7 +170,7 @@ class nextflowProcess:
                                 else:
                                     flags.append(cm + cd)
                             else:
-                                flags.append("--" + e + " $" + cd)
+                                pass #flags.append("--" + e + " $" + cd)
                     if v[4]:
                         channelSource = " from params." + k
                         self.addedparams.append(k)
