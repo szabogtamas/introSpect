@@ -170,7 +170,7 @@ class nextflowProcess:
                                 else:
                                     flags.append(cm + cd)
                             else:
-                                pass #flags.append("--" + e + " $" + cd)
+                                pass  # flags.append("--" + e + " $" + cd)
                     if v[4]:
                         channelSource = " from params." + k
                         self.addedparams.append(k)
@@ -603,4 +603,23 @@ def cleanup(
                     os.remove(location + "/" + e)
                 except:
                     shutil.rmtree(location + "/" + e)
+    return
+
+
+def init_sge(envlist=None):
+    """
+    Add env vars needed to submit SGE scripts by Nextflow.
+
+    Parameters
+    ----------
+    envlist
+        The file (typically in the root) containing env vars for SGE.
+    """
+
+    if envlist is None:
+        envlist = os.path.expanduser("~") + "/.sge_env"
+    with open(envlist, "r") as f:
+        for line in f:
+            a, b = line.split("\n")[0].split("=")
+            os.environ[a] = b
     return
