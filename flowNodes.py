@@ -426,6 +426,7 @@ def channelNodes(
     *args,
     location="",
     main_kws=None,
+    queueRestriction=None,
     generalSettings=None,
     containerPaths=None,
     verbose=True
@@ -447,6 +448,16 @@ def channelNodes(
         }
     }
     """
+
+    if queueRestriction is not None?
+        general_cluster_profile += """
+        executor {
+            $sge {
+                queueSize = """+str(queueRestriction)+"""
+                pollInterval = '30sec'
+            }
+        }
+        """
 
     if generalSettings is None:
         generalSettings = """
