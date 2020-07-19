@@ -449,7 +449,7 @@ def channelNodes(
     }
     """
 
-    if queueRestriction is not None?
+    if queueRestriction is not None:
         general_cluster_profile += """
         executor {
             $sge {
