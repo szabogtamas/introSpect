@@ -443,7 +443,7 @@ def channelNodes(
             process.executor = 'sge'
             process.cpus = 1
             process.penv = 'smp'
-            process.errorStrategy = 'retry'
+            process.errorStrategy = 'ignore'
             process.clusterOptions = { '-V -S /bin/bash -q all.q@apollo-*' }
         }
     }
