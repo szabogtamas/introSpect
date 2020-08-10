@@ -450,14 +450,18 @@ def channelNodes(
     """
 
     if queueRestriction is not None:
-        general_cluster_profile += """
+        general_cluster_profile += (
+            """
         executor {
             $sge {
-                queueSize = """+str(queueRestriction)+"""
+                queueSize = """
+            + str(queueRestriction)
+            + """
                 pollInterval = '30sec'
             }
         }
         """
+        )
 
     if generalSettings is None:
         generalSettings = """
@@ -633,4 +637,52 @@ def init_sge(envlist=None):
         for line in f:
             a, b = line.split("\n")[0].split("=")
             os.environ[a] = b
+    return
+
+
+def runpipe_sge(
+    pipeline_folder,
+    mainfile="main.nf",
+    needs_sge_init=True,
+    with_timeline=True,
+    with_graph=True,
+    runprofile="cluster",
+    in_background=False,
+):
+    """
+    Run a nextflow pipeline compiled by flowNodes.
+
+    Parameters
+    ----------
+    pipeline_folder
+        Folder containing the main nextflow script.
+    mainfile
+        The main script is usually called main.nf; set this, if not.
+    needs_sge_init
+        If SGE-related variables are not saved in the env, initialize it.
+    with_timeline
+        Register a (html format) timeline.
+    with_graph
+        Draw a graph representation of the pipeline.
+    runprofile
+        The name of the profile that should be run. Use ´None´ for local run.
+    in_background
+        Run pipeline in background.
+    """
+
+    crdir = os.getcwd()
+    os.chdir(pipeline_folder)
+    if needs_sge_init:
+        init_sge()
+    cmd = ["NXF_ANSI_LOG=false", "nextflow", "run", mainfile]
+    if with_timeline:
+        cmd += ["-with-timeline", "../timeline.html"]
+    if with_graph:
+        cmd += ["-with-dag", "../pipeline_chart.png"]
+    if runprofile is not None:
+        cmd += ["-profile", "cluster"]
+    if in_background:
+        cmd.appemd("-bg")
+
+    os.chdir(crdir)
     return
