@@ -683,6 +683,7 @@ def runpipe_sge(
         cmd += ["-profile", "cluster"]
     if in_background:
         cmd.appemd("-bg")
+    # Inspired by https://github.com/fabianlee/blogcode/blob/master/python/runProcessWithLiveOutput.py
     process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE)
     while True:
         output = process.stdout.readline()
