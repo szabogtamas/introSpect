@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, inspect, textwrap, shutil
+import os, subprocess, inspect, textwrap, shutil
 from . import commandLines, captureIntoNotebook, hint
 
 
@@ -683,6 +683,14 @@ def runpipe_sge(
         cmd += ["-profile", "cluster"]
     if in_background:
         cmd.appemd("-bg")
-
+    process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE)
+    while True:
+        output = process.stdout.readline()
+        if output == '' and process.poll() is not None:
+            break
+        if output:
+            print output.strip()
+    rc = process.poll()
+    return rc
     os.chdir(crdir)
     return
