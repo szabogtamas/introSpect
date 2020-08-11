@@ -645,7 +645,7 @@ def init_sge(envlist=None, disable_ansi=True):
     return
 
 
-def runpipe_sge(
+def run_pipeline(
     pipeline_folder,
     mainfile="main.nf",
     needs_sge_init=True,
