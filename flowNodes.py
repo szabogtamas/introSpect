@@ -695,7 +695,7 @@ def run_pipeline(
         msg = process.stdout.readline()
         if process.poll() is not None:
             running = False
-        if output:
+        if msg:
             print(msg.strip().decode())
     os.chdir(crdir)
     return
