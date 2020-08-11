@@ -425,6 +425,40 @@ class nextflowProcess:
         return textwrap.dedent(body)
 
 
+class helloWorld(nextflowProcess):
+    """
+    A Pythonized version of the hello.nf (https://github.com/nextflow-io/hello/blob/master/main.nf).
+    """
+
+    def directives(self):
+        return {
+            "echo": "true",
+        }
+
+    def channel_pretreat(self):
+        return [
+            ["Channel", "from('Bonjour', 'Ciao', 'Hello', 'Hola')", "set{cheers}"],
+        ]
+
+    def channel_specifications(self):
+        return {
+            "cheers": ("val", "x", "x", None, False),
+        }
+
+    def process(self, x: str,) -> None:
+        """
+        Print something on screen.
+
+        Parameters
+        ----------
+        x
+            The string to print.
+        """
+
+        print(x)
+        return
+
+
 def channelNodes(
     *args,
     location="",
@@ -492,6 +526,8 @@ def channelNodes(
     process_settings = dict()
     addedparams = []
     flowBody = ""
+    if len(args) < 1:
+        args = [helloWorld(inchannels=["cheers"])]
     for process in args:
         hint(verbose, "Adding process node:", process.processname)
         process.compile_process(location)
