@@ -336,7 +336,10 @@ class nextflowProcess:
                 self.process_settings = dict()
             self.process_settings["container"] = self.container
 
-        if self.container in [None, ""]:
+        if self.container in [
+            None,
+            "",
+        ]:  # Might seem odd to check twice, but could be set ot None in the previous step.
             pass
         else:
             if os.path.isfile(self.container):
@@ -345,7 +348,7 @@ class nextflowProcess:
                 if self.container in containers:
                     fn = containers[self.container]
                 else:
-                    fn = self.container.split(["://"])[1]
+                    fn = self.container.split("://")[1]
                     fn = fn.replace("/", "_")
                     fn = fn.replace(":", "_")
                     fn = dr + "/" + fn + ".sif"
