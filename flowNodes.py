@@ -621,7 +621,7 @@ def cleanup(
     return
 
 
-def init_sge(envlist=None):
+def init_sge(envlist=None, disable_ansi=True):
     """
     Add env vars needed to submit SGE scripts by Nextflow.
 
@@ -629,6 +629,9 @@ def init_sge(envlist=None):
     ----------
     envlist
         The file (typically in the root) containing env vars for SGE.
+    disable_ansi
+        If ANSI log is not disabled, a new set of status reports are shown for every
+        Nextflow task each time they are updated. The output is more concise if disabled.
     """
 
     if envlist is None:
@@ -637,6 +640,8 @@ def init_sge(envlist=None):
         for line in f:
             a, b = line.split("\n")[0].split("=")
             os.environ[a] = b
+    if disable_ansi:
+        os.environ["NXF_ANSI_LOG"] = "false"
     return
 
 
@@ -674,7 +679,7 @@ def runpipe_sge(
     os.chdir(pipeline_folder)
     if needs_sge_init:
         init_sge()
-    cmd = ["NXF_ANSI_LOG=false", "nextflow", "run", mainfile]
+    cmd = ["nextflow", "run", mainfile]
     if with_timeline:
         cmd += ["-with-timeline", "../timeline.html"]
     if with_graph:
@@ -685,13 +690,12 @@ def runpipe_sge(
         cmd.appemd("-bg")
     # Inspired by https://github.com/fabianlee/blogcode/blob/master/python/runProcessWithLiveOutput.py
     process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE)
-    while True:
-        output = process.stdout.readline()
-        if output == '' and process.poll() is not None:
-            break
+    running = True
+    while running:
+        msg = process.stdout.readline()
+        if process.poll() is not None:
+            running = False
         if output:
-            print output.strip()
-    rc = process.poll()
-    return rc
+            print(msg.strip().decode())
     os.chdir(crdir)
     return
