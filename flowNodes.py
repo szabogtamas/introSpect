@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os, subprocess, inspect, textwrap, shutil
+from typing import Union
 from . import commandLines, captureIntoNotebook, hint
 
 
@@ -581,7 +582,67 @@ def channelNodes(
     return
 
 
-def nonCondaCopy(git_packages, inhouse_packages, dr):
+def checkNodeReplacements(
+    nodes: Union[None, list],
+    default_nodes: Union[None, dict],
+    replacement_nodes: Union[None, dict],
+) -> list:
+    """
+    Checks a list of initialized process node objects against a dictionary of custom
+    nodes and replaces the predefined ones with th user supplied nodes. Best used to
+    replace only some nodes in a predefined pipeline.
+
+    Parameters
+    ----------
+    nodes
+        Objects that define processes as nodes linked by Nextflow. If None is supplied,
+        the pipeline will consist of the nodes defined here.
+    replacement_nodes
+        A predefined pipeline in the form of initialized process node objects.
+    replacement_nodes
+        Custom process nodes that should be used instead of predefined ones with the same 
+        name (dictionary with [name_in_default_list]:[custom node] key: value pairs).
+    
+    Returns
+    -------
+    List of initialized process objects.
+    """
+
+    if nodes is None:
+        if replacement_nodes is None:
+            replacement_nodes = dict()
+        final_nodes = []
+        for node in default_nodes:
+            object_name = node.__class__.__name__
+            if object_name in replacement_nodes:
+                final_nodes.append(replacement_nodes[object_name])
+            else:
+                final_nodes.append(node)
+        return final_nodes
+    else:
+        return nodes
+
+
+def nonCondaCopy(git_packages: list, inhouse_packages: list, dr: str,) -> None:
+    """
+    Inhouse (developmental) packages that are not yet available via Conda will be
+    copied to `pipeline/packages` or something similar to be available for scripts.
+
+    Parameters
+    ----------
+    git_packages
+        Developmental packages available via GitHub.
+    inhouse_packages
+        Not (yet) public packages.
+    dr
+        The directory where to copy packages.
+    
+    Returns
+    -------
+    List of initialized process objects.
+    """
+
+    # TODO: Also add a procedure that handles download from GitHub
     for p in inhouse_packages:
         packdir = p.split("/")[-1]
         shutil.copytree(
