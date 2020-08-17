@@ -398,18 +398,21 @@ class cmdConnect:
                                                 )
                                             r = t
                                         else:
-                                            try:
-                                                r = (
-                                                    "\n".join([str(x) for x in r])
-                                                    + "\n"
-                                                )
-                                            except:
-                                                print(
-                                                    "No built-in method to save result ["
-                                                    + str(i)
-                                                    + "] of type "
-                                                    + type(r).__name__
-                                                )
+                                            if isinstance(row, plt.Axes):
+                                                r = row
+                                            else:
+                                                try:
+                                                    r = (
+                                                        "\n".join([str(x) for x in r])
+                                                        + "\n"
+                                                    )
+                                                except:
+                                                    print(
+                                                        "No built-in method to save result ["
+                                                        + str(i)
+                                                        + "] of type "
+                                                        + type(r).__name__
+                                                    )
                                 else:
                                     if isinstance(r, dict):
                                         try:
