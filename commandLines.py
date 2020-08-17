@@ -543,7 +543,10 @@ class cmdConnect:
                             ):
                                 r.figure.savefig(fn)
                             else:
-                                r.figure.savefig(fn + ".png")
+                                try:
+                                    r.figure.savefig(fn + ".png")
+                                except:
+                                    pass
                                 r.figure.savefig(fn + ".pgf")
                         else:
                             r.savefig(fn)
