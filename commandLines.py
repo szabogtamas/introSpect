@@ -541,7 +541,9 @@ class cmdConnect:
                 else:
                     print(r)
             else:
-                if isinstance(r, (list, pd.DataFrame, plt.Axes, sns.matrix.ClusterGrid)):
+                if isinstance(
+                    r, (list, pd.DataFrame, plt.Axes, sns.matrix.ClusterGrid)
+                ):
                     if isinstance(r, (list, pd.DataFrame)):
                         if isinstance(r, pd.DataFrame):
                             r.to_csv(fn, sep="\t")
@@ -553,7 +555,12 @@ class cmdConnect:
                                     in e[0].figure.canvas.get_supported_filetypes()
                                 ):
                                     for e, i in enumerate(r):
-                                        nfn = os.path.realpath(".".join(fn.split(".")[:-1]) + "_" + str(i) + fn.split(".")[-1])
+                                        nfn = os.path.realpath(
+                                            ".".join(fn.split(".")[:-1])
+                                            + "_"
+                                            + str(i)
+                                            + fn.split(".")[-1]
+                                        )
                                         e.figure.savefig(nfn)
                                         tx.append(nfn)
                                 else:
@@ -566,10 +573,15 @@ class cmdConnect:
                                         tx.append(fn + "_" + str(i) + ".pgf")
                             else:
                                 for e, i in enumerate(r):
-                                    nfn = os.path.realpath(".".join(fn.split(".")[:-1]) + "_" + str(i) + fn.split(".")[-1])
+                                    nfn = os.path.realpath(
+                                        ".".join(fn.split(".")[:-1])
+                                        + "_"
+                                        + str(i)
+                                        + fn.split(".")[-1]
+                                    )
                                     e.savefig(nfn)
                                     tx.append(nfn)
-                            with open(fn+".txt", "w") as f:
+                            with open(fn + ".txt", "w") as f:
                                 f.write("\n".join(tx))
                     else:
                         if isinstance(r, plt.Axes):
