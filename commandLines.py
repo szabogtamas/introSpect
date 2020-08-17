@@ -360,25 +360,31 @@ class cmdConnect:
                                         if isinstance(row, str):
                                             r = "\n".join(r) + "\n"
                                         else:
-                                            if not isinstance(r, np.ndarray):
-                                                r = np.array(r)
-                                            r = r.astype(str)
-                                            if isinstance(row, (int, float)):
-                                                r = "\n".join(r) + "\n"
+                                            if isinstance(row[0], plt.Axes):
+                                                rn = list()
+                                                for row in r:
+                                                    rn.append(row[0])
+                                                r = row[0]
                                             else:
-                                                r = (
-                                                    "\n".join(
-                                                        np.apply_along_axis(
-                                                            lambda x: np.asarray(
-                                                                "\t".join(x),
-                                                                dtype=object,
-                                                            ),
-                                                            1,
-                                                            r,
+                                                if not isinstance(r, np.ndarray):
+                                                    r = np.array(r)
+                                                r = r.astype(str)
+                                                if isinstance(row, (int, float)):
+                                                    r = "\n".join(r) + "\n"
+                                                else:
+                                                    r = (
+                                                        "\n".join(
+                                                            np.apply_along_axis(
+                                                                lambda x: np.asarray(
+                                                                    "\t".join(x),
+                                                                    dtype=object,
+                                                                ),
+                                                                1,
+                                                                r,
+                                                            )
                                                         )
+                                                        + "\n"
                                                     )
-                                                    + "\n"
-                                                )
                                     else:
                                         if isinstance(row, dict):
                                             colnames = set()
@@ -535,9 +541,36 @@ class cmdConnect:
                 else:
                     print(r)
             else:
-                if isinstance(r, (pd.DataFrame, plt.Axes, sns.matrix.ClusterGrid)):
-                    if isinstance(r, pd.DataFrame):
-                        r.to_csv(fn, sep="\t")
+                if isinstance(r, (list, pd.DataFrame, plt.Axes, sns.matrix.ClusterGrid)):
+                    if isinstance(r, (list, pd.DataFrame)):
+                        if isinstance(r, pd.DataFrame):
+                            r.to_csv(fn, sep="\t")
+                        else:
+                            tx = []
+                            if isinstance(e[0], plt.Axes):
+                                if (
+                                    fn.split(".")[-1]
+                                    in e[0].figure.canvas.get_supported_filetypes()
+                                ):
+                                    for e, i in enumerate(r):
+                                        nfn = os.path.realpath(".".join(fn.split(".")[:-1]) + "_" + str(i) + fn.split(".")[-1])
+                                        e.figure.savefig(nfn)
+                                        tx.append(nfn)
+                                else:
+                                    for e, i in enumerate(r):
+                                        try:
+                                            e.figure.savefig(fn + "_" + str(i) + ".png")
+                                        except:
+                                            pass
+                                        e.figure.savefig(fn + "_" + str(i) + ".pgf")
+                                        tx.append(fn + "_" + str(i) + ".pgf")
+                            else:
+                                for e, i in enumerate(r):
+                                    nfn = os.path.realpath(".".join(fn.split(".")[:-1]) + "_" + str(i) + fn.split(".")[-1])
+                                    e.savefig(nfn)
+                                    tx.append(nfn)
+                            with open(fn+".txt", "w") as f:
+                                f.write("\n".join(tx))
                     else:
                         if isinstance(r, plt.Axes):
                             if (
