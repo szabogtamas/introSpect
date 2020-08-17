@@ -667,7 +667,7 @@ def startScriptConneted(dr: str,) -> str:
     -------
     A heading for scripts (in Nextflow bin).
     """
-    
+
     connected = (
         """
     #!/usr/bin/env python
