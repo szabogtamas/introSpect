@@ -547,7 +547,7 @@ class cmdConnect:
                     if isinstance(r, (list, pd.DataFrame)):
                         if isinstance(r, pd.DataFrame):
                             r.to_csv(fn, sep="\t")
-                        else:
+                        else:  # TODO: refactor this part into a separate figsaver function
                             tx = []
                             if isinstance(e[0], plt.Axes):
                                 if (
