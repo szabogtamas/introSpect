@@ -549,10 +549,11 @@ class cmdConnect:
                             r.to_csv(fn, sep="\t")
                         else:  # TODO: refactor this part into a separate figsaver function
                             tx = []
-                            if isinstance(e[0], plt.Axes):
+                            if isinstance(r[0], plt.Axes):
+                                print("!!!hurray")
                                 if (
                                     fn.split(".")[-1]
-                                    in e[0].figure.canvas.get_supported_filetypes()
+                                    in r[0].figure.canvas.get_supported_filetypes()
                                 ):
                                     for e, i in enumerate(r):
                                         nfn = os.path.realpath(
