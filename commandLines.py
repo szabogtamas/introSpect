@@ -549,15 +549,12 @@ class cmdConnect:
                             r.to_csv(fn, sep="\t")
                         else:  # TODO: refactor this part into a separate figsaver function
                             tx = []
-                            print("!!!nury")
-                            print(type(r[0]))
                             if isinstance(r[0], plt.Axes):
-                                print("!!!hurray")
                                 if (
                                     fn.split(".")[-1]
                                     in r[0].figure.canvas.get_supported_filetypes()
                                 ):
-                                    for e, i in enumerate(r):
+                                    for i, e in enumerate(r):
                                         nfn = os.path.realpath(
                                             ".".join(fn.split(".")[:-1])
                                             + "_"
@@ -567,7 +564,7 @@ class cmdConnect:
                                         e.figure.savefig(nfn)
                                         tx.append(nfn)
                                 else:
-                                    for e, i in enumerate(r):
+                                    for i, e in enumerate(r):
                                         try:
                                             e.figure.savefig(fn + "_" + str(i) + ".png")
                                         except:
@@ -575,7 +572,7 @@ class cmdConnect:
                                         e.figure.savefig(fn + "_" + str(i) + ".pgf")
                                         tx.append(fn + "_" + str(i) + ".pgf")
                             else:
-                                for e, i in enumerate(r):
+                                for i, e in enumerate(r):
                                     nfn = os.path.realpath(
                                         ".".join(fn.split(".")[:-1])
                                         + "_"
