@@ -565,12 +565,13 @@ class cmdConnect:
                                         tx.append(nfn)
                                 else:
                                     for i, e in enumerate(r):
+                                        nfn = os.path.realpath(fn + "_" + str(i))
                                         try:
-                                            e.figure.savefig(fn + "_" + str(i) + ".png")
+                                            e.figure.savefig(nfn + ".png")
                                         except:
                                             pass
-                                        e.figure.savefig(fn + "_" + str(i) + ".pgf")
-                                        tx.append(fn + "_" + str(i) + ".pgf")
+                                        e.figure.savefig(nfn + ".pgf")
+                                        tx.append(nfn + ".pgf")
                             else:
                                 for i, e in enumerate(r):
                                     nfn = os.path.realpath(
