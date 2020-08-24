@@ -364,7 +364,7 @@ class cmdConnect:
                                                 rn = list()
                                                 for row in r:
                                                     rn.append(row[0])
-                                                r = row[0]
+                                                r = rn
                                             else:
                                                 if not isinstance(r, np.ndarray):
                                                     r = np.array(r)
@@ -549,6 +549,8 @@ class cmdConnect:
                             r.to_csv(fn, sep="\t")
                         else:  # TODO: refactor this part into a separate figsaver function
                             tx = []
+                            print("!!!nury")
+                            print(type(r[0]))
                             if isinstance(r[0], plt.Axes):
                                 print("!!!hurray")
                                 if (
