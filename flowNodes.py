@@ -725,7 +725,12 @@ def endScriptConneted(f: Callable, modified_kws: str,) -> str:
 def cleanup(
     *,
     location: str = os.getcwd(),
-    nameblacklist: list = ["work", "notebook_files"],
+    nameblacklist: list = [
+        "work",
+        "notebook_files",
+        "notebook.run.xml",
+        "report.run.xml",
+    ],
     extensionblacklist: list = [
         ".log",
         ".aux",
