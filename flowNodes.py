@@ -585,6 +585,56 @@ def channelNodes(
     return
 
 
+def createChannelSpecification(
+    channel_type: str,
+    name_in_nextflow: Union[None, str] = None,
+    name_in_python: Union[None, str] = None,
+    channel_transformation: Union[None, str] = None,
+    derive_from_params: bool = False,
+    mapNFpy: Union[None, dict] = None,
+) -> Tuple[Union[str, tuple], Union[str, tuple], str, bool]:
+    """
+    Maps arguments of python functions to NextFlow names, to help channel specificatins.
+
+    Parameters
+    ----------
+    channel_type
+        Type of the channel in the NextFlow (var, file, tuple, etc.).
+    name_in_nextflow
+        Name of the variable to be used in the nextflow script.
+    name_in_python
+        Naem of the argument used in the python function.
+    channel_transformation
+        If the nextflow collecting channel should be transformed (Groovy).
+    derive_from_params
+        If the channel derives form a parameter in the config file.
+    mapNFpy
+        If the NF variable is aof tuple type, it might be more convenient to add a mapping as a dictionary.
+
+    Returns
+    -------
+    A tuple, used in channel specifications with channel_type, name_in_nextflow, name_in_python, channel_transformation, derive_from_params.
+    """
+
+    if mapNFpy is not None:
+        name_in_nextflow, name_in_python = [], []
+        for k, v in mapNFpy.items():
+            name_in_nextflow.append(k)
+            name_in_python.append(v)
+        name_in_nextflow, name_in_python = (
+            tuple(name_in_nextflow),
+            tuple(name_in_python),
+        )
+
+    return (
+        channel_type,
+        name_in_nextflow,
+        name_in_python,
+        channel_transformation,
+        derive_from_params,
+    )
+
+
 def checkNodeReplacements(
     nodes: Union[None, list],
     default_nodes: Union[None, dict],

@@ -642,7 +642,7 @@ class cmdConnect:
             docstring = docstring.strip()
         except:
             docstring = ""
-        
+
         if docstring:
             lines = docstring.split("\n", 1)
             short_description = lines[0]
