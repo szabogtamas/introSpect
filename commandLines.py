@@ -86,9 +86,12 @@ class cmdConnect:
         pardef = spect.kwonlydefaults
 
         # Add version and an option that shows what is the master function and what other functions are defined in the script
+        dcs = fun.__doc__
+        if dcs is None:
+            dcs = ""
         long_doc = "The master function:\n\n"
         long_doc += fun.__name__ + "\n"
-        long_doc += fun.__doc__ + "\n\n\n"
+        long_doc += dcs + "\n\n\n"
         long_doc += "The helper functions:\n\n"
         for n, f in [
             o
@@ -635,7 +638,11 @@ class cmdConnect:
         short_description, description = "", ""
 
         docstring = fun.__doc__
-        docstring = docstring.strip()
+        try:
+            docstring = docstring.strip()
+        except:
+            docstring = ""
+        
         if docstring:
             lines = docstring.split("\n", 1)
             short_description = lines[0]

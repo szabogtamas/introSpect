@@ -292,7 +292,10 @@ class nextflowProcess:
             conda = self.generate_py(script_file, dr)
             os.chmod(script_file, 0o775)
             if self.manualDoc in [None, ""]:
-                self.manualDoc = self.process.__doc__
+                if self.process.__doc__ is None:
+                    self.manualDoc = ""
+                else:
+                    self.manualDoc = self.process.__doc__
         else:
             if self.inputs is None:
                 raise ValueError(
