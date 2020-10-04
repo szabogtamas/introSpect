@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os, subprocess, inspect, textwrap, shutil
-from typing import Union, Callable
+from typing import Union, Tuple, Callable
 from . import commandLines, captureIntoNotebook, hint
 
 
