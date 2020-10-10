@@ -477,7 +477,7 @@ def channelNodes(
     os.makedirs(location + "/packages", exist_ok=True)
 
     if generalClusterProfile is None:
-        general_cluster_profile = """
+        generalClusterProfile = """
         profiles {
             standard {
                 process.executor = 'local'
@@ -493,7 +493,7 @@ def channelNodes(
         """
 
     if queueRestriction is not None:
-        general_cluster_profile += (
+        generalClusterProfile += (
             """
         executor {
             $sge {
@@ -578,7 +578,7 @@ def channelNodes(
     configBody = (
         "\n".join(mainparams)
         + "\n\n"
-        + textwrap.dedent(general_cluster_profile)
+        + textwrap.dedent(generalClusterProfile)
         + processSettings
         + textwrap.dedent(generalSettings)
     )
