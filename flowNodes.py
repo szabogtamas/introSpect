@@ -468,6 +468,7 @@ def channelNodes(
     location="",
     main_kws=None,
     queueRestriction=None,
+    generalClusterProfile=None,
     generalSettings=None,
     containerPaths=None,
     verbose=True,
@@ -475,20 +476,21 @@ def channelNodes(
     os.makedirs(location + "/bin", exist_ok=True)
     os.makedirs(location + "/packages", exist_ok=True)
 
-    general_cluster_profile = """
-    profiles {
-        standard {
-            process.executor = 'local'
+    if generalClusterProfile is None:
+        general_cluster_profile = """
+        profiles {
+            standard {
+                process.executor = 'local'
+            }
+            cluster {
+                process.executor = 'sge'
+                process.cpus = 1
+                process.penv = 'smp'
+                process.errorStrategy = 'ignore'
+                process.clusterOptions = { '-V -S /bin/bash -q all.q@apollo-*' }
+            }
         }
-        cluster {
-            process.executor = 'sge'
-            process.cpus = 1
-            process.penv = 'smp'
-            process.errorStrategy = 'ignore'
-            process.clusterOptions = { '-V -S /bin/bash -q all.q@apollo-*' }
-        }
-    }
-    """
+        """
 
     if queueRestriction is not None:
         general_cluster_profile += (
