@@ -493,7 +493,7 @@ def channelNodes(
         """
 
     if queueRestriction is not None:
-        generalClusterProfile += (
+        generalClusterProfile += textwrap.dedent(
             """
         executor {
             $sge {
