@@ -471,6 +471,7 @@ def channelNodes(
     generalClusterProfile=None,
     generalSettings=None,
     containerPaths=None,
+    labelSettings=None,
     verbose=True,
 ):
     os.makedirs(location + "/bin", exist_ok=True)
@@ -515,6 +516,8 @@ def channelNodes(
         """
     if containerPaths is None:
         containerPaths = dict()
+    if labelSettings is None:
+        labelSettings = dict()
 
     with open(location + "/bin/captureIntoNotebook.py", "w") as f:
         capturer = inspect.getsource(captureIntoNotebook)
@@ -566,6 +569,11 @@ def channelNodes(
     with open(location + "/main.nf", "w") as f:
         f.write(flowBody)
     processSettings = "process {\n"
+    for k, v in labelSettings.items():
+        s = "    withLabel:" + k + "     {\n"
+        for w in v.items():
+            s += "        " + w + "\n"
+        processSettings += s + "    }\n"
     for k, v in process_settings.items():
         if v is not None:
             s = "    withName:" + k + "     {\n"
