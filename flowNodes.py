@@ -580,7 +580,7 @@ def channelNodes(
     processSettings = "process {\n"
     for k, v in labelSettings.items():
         s = "    withLabel:" + k + "     {\n"
-        for w in v.items():
+        for w in v:
             s += "        " + w + "\n"
         processSettings += s + "    }\n"
     for k, v in process_settings.items():
