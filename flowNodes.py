@@ -297,6 +297,10 @@ class nextflowProcess:
                 else:
                     self.manualDoc = self.process.__doc__
         else:
+            if self.__doc__ is None:
+                self.manualDoc = ""
+            else:
+                self.manualDoc = self.__doc__
             if self.inputs is None:
                 raise ValueError(
                     "The command does not seem to be a python function, so we cannot guess its inputs. Please supply a list of inputs channel statements!!!"
