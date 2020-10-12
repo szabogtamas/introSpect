@@ -568,6 +568,11 @@ def channelNodes(
                 v = [[q, w] for q, w in v.items()]
             if v is None:
                 v = "'None'"
+            if type(v) is tuple:
+                if len(v) == 1:
+                    v = v[0]
+                else:
+                    v = list(v)
             mainparams.append("params." + k + " = " + str(v))
     flowBody = "#!/usr/bin/env nextflow\n\n" + date_helper + "\n\n" + flowBody
     with open(location + "/main.nf", "w") as f:
