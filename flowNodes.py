@@ -553,6 +553,11 @@ def channelNodes(
     if main_kws is None:
         main_kws = dict()
     for k, v in main_kws.items():
+        if isinstance(v, tuple):
+            if len(v) == 1:
+                v = v[0]
+            else:
+                v = list(v)
         if isinstance(v, str):
             v = "'" + v + "'"
         if type(v) is dict:
