@@ -25,13 +25,15 @@ class cmdConnect:
     eval
         Runs the function (function)
     results
-        Stores the value(s) returned by the function 
+        Stores the value(s) returned by the function
     save
-        Saves the result(s) to file(s) if file output was specified. Prints the result as a string otherwise (function) 
+        Saves the result(s) to file(s) if file output was specified. Prints the result as a string otherwise (function)
     """
 
     def __init__(
-        self, fun: Callable, paramtune: Union[None, dict] = None,
+        self,
+        fun: Callable,
+        paramtune: Union[None, dict] = None,
     ):
         """
         Adds parameters of the function to argparse.
@@ -619,7 +621,7 @@ class cmdConnect:
         ----------
         fun
             The function we need the parsed docstring for.
-            
+
         Returns
         -------
         A dictionary with all the descriptions.
@@ -686,7 +688,7 @@ class cmdConnect:
         ----------
         s
             The string(s) supplied via command line.
-            
+
         Returns
         -------
         List of integers.
@@ -710,7 +712,7 @@ class cmdConnect:
         ----------
         s
             The string(s) supplied via command line.
-            
+
         Returns
         -------
         List of floats.

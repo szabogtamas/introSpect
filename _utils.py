@@ -2,7 +2,11 @@ import os, sys
 from typing import Tuple, Union, Callable
 
 
-def cmdSupport(name: str, package: str, fn: str,) -> Tuple[str, str, bool]:
+def cmdSupport(
+    name: str,
+    package: str,
+    fn: str,
+) -> Tuple[str, str, bool]:
 
     """
     Advanced support for command line execution of package components. Fixes import
@@ -16,7 +20,7 @@ def cmdSupport(name: str, package: str, fn: str,) -> Tuple[str, str, bool]:
         Parent package of the script.
     fn
         File name of the script.
-    
+
     Returns
     -------
     name
