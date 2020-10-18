@@ -128,6 +128,7 @@ class nextflowProcess:
             remainder = self.params.copy()
             for k, v in specified_channels.items():
                 if k in self.inchannels:
+                    print(k, v)
                     if type(v[1]) is tuple:
                         channelVariables = []
                         for e in v[1]:
@@ -150,11 +151,13 @@ class nextflowProcess:
                         pyVariable = (v[2],)
                     else:
                         pyVariable = v[2]
+                    print(pyVariable)
                     for i in range(len(pyVariable)):
                         e = pyVariable[i]
                         if e not in [None, "None"]:
                             remainder.pop(e, None)
                             cd = channelVariables[i]
+                            print(cd)
                             if cd[0] in ["'", '"', "\n"]:
                                 if cd[0] == "*":
                                     cd = '"${' + cd[1:] + '}"'
@@ -164,6 +167,8 @@ class nextflowProcess:
                                     cd = " " + cd
                             else:
                                 cd = "$" + cd
+                            print(cd)
+                            print(self.cmdpars)
                             if e in self.cmdpars:
                                 cm = self.cmdpars[e]
                                 if cm == "":
@@ -482,6 +487,7 @@ def channelNodes(
     generalSettings=None,
     containerPaths=None,
     labelSettings=None,
+    returnFolder=False,
     verbose=True,
 ):
     os.makedirs(location + "/bin", exist_ok=True)
@@ -612,6 +618,8 @@ def channelNodes(
     )
     with open(location + "/nextflow.config", "w") as f:
         f.write(configBody)
+    if returnFolder:
+        return location
     return
 
 
