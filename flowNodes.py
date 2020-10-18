@@ -118,17 +118,26 @@ class nextflowProcess:
         inputs = "\n"
         if self.inputs is None:
             specified_channels = self.channel_specifications()
-            if self.cmdpars is not None:
+            if self.cmdpars is None:
+                self.cmdpars = dict()
+                for k, v in self.params.items():
+                    if k not in [None, ""]:
+                        self.cmdpars[k] = k+" "
+                remainder = dict()
+                spc = self.inchannels + self.outchannels
+                for k, v in specified_channels.items():
+                    if k not in spc:
+                        self.inchannels.append(k)
+            else:
                 for k, v in self.cmdpars.items():
                     if k not in self.params:
                         if k in self.cmdpreset:
                             self.params[k] = self.cmdpreset[k]
                         else:
                             self.params[k] = None
-            remainder = self.params.copy()
+                remainder = self.params.copy()
             for k, v in specified_channels.items():
                 if k in self.inchannels:
-                    print(k, v)
                     if type(v[1]) is tuple:
                         channelVariables = []
                         for e in v[1]:
@@ -151,13 +160,11 @@ class nextflowProcess:
                         pyVariable = (v[2],)
                     else:
                         pyVariable = v[2]
-                    print(pyVariable)
                     for i in range(len(pyVariable)):
                         e = pyVariable[i]
                         if e not in [None, "None"]:
                             remainder.pop(e, None)
                             cd = channelVariables[i]
-                            print(cd)
                             if cd[0] in ["'", '"', "\n"]:
                                 if cd[0] == "*":
                                     cd = '"${' + cd[1:] + '}"'
@@ -167,8 +174,6 @@ class nextflowProcess:
                                     cd = " " + cd
                             else:
                                 cd = "$" + cd
-                            print(cd)
-                            print(self.cmdpars)
                             if e in self.cmdpars:
                                 cm = self.cmdpars[e]
                                 if cm == "":
@@ -176,7 +181,10 @@ class nextflowProcess:
                                 else:
                                     flags.append(cm + cd)
                             else:
-                                pass  # flags.append("--" + e + " $" + cd)
+                                if e[0] == "*":
+                                    flags.append(cd)
+                                else:
+                                    pass  # flags.append("--" + e + " $" + cd)
                     if v[4]:
                         channelSource = " from params." + k
                         self.addedparams.append(k)
@@ -251,7 +259,8 @@ class nextflowProcess:
                                 else:
                                     self.flags.append(cm + cd)
                             else:
-                                self.flags.append("--" + e + cd)
+                                if e != "":
+                                    self.flags.append("--" + e + cd)
                     if v[3] is None:
                         channelTransform = ""
                     else:
