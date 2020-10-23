@@ -114,7 +114,7 @@ class nextflowProcess:
         return textwrap.indent(dirs, "            ")
 
     def compile_inputs(self):
-        flags, positionals = [], {}
+        flags, lazy, positionals = [], [], {}
         inputs = "\n"
         if self.inputs is None:
             specified_channels = self.channel_specifications()
@@ -122,7 +122,7 @@ class nextflowProcess:
                 self.cmdpars = dict()
                 for k, v in self.params.items():
                     if k not in [None, ""]:
-                        self.cmdpars[k] = k+" "
+                        self.cmdpars[k] = k + " "
                 remainder = dict()
                 spc = self.inchannels + self.outchannels
                 for k, v in specified_channels.items():
@@ -182,7 +182,7 @@ class nextflowProcess:
                                     flags.append(cm + cd)
                             else:
                                 if e[0] == "*":
-                                    flags.append(cd)
+                                    lazy.append(cd)
                                 else:
                                     pass  # flags.append("--" + e + " $" + cd)
                     if v[4]:
@@ -213,7 +213,7 @@ class nextflowProcess:
                         flags.append(cm + "$" + k)
                 else:
                     flags.append("--" + k + " $" + k)
-            self.flags, self.positionals = flags, positionals
+            self.flags, self.positionals, self.lazy = flags, positionals, lazy
         else:
             for e in self.inputs:
                 inputs += e + "\n"
@@ -335,7 +335,14 @@ class nextflowProcess:
         for k in self.cmdorder:
             if k in self.positionals:
                 positionals += self.positionals[k] + " "
-        command = self.processname + ".py " + " ".join(self.flags) + positionals
+        command = (
+            self.processname
+            + ".py "
+            + " ".join(self.flags)
+            + positionals
+            + " "
+            + " ".join(self.lazy)
+        )
         notebooktitle, capturednotebook = self.capturepars
         if self.capture:
             command += (
