@@ -174,6 +174,9 @@ class nextflowProcess:
                             pyVariable = v[2]
                         for i in range(len(pyVariable)):
                             cd = channelVariables[i]
+                            if cd[:5] == "file(":
+                                cd = cd.replace("file(", "")
+                                cd = cd[:-1]
                             if cd[0] in ["'", '"', "\n"]:
                                 if cd[0] == "*":
                                     cd = '"${' + cd[1:] + '}"'
