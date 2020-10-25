@@ -170,19 +170,19 @@ class nextflowProcess:
                     else:
                         pyVariable = v[2]
                     for i in range(len(pyVariable)):
+                        cd = channelVariables[i]
+                        if cd[0] in ["'", '"', "\n"]:
+                            if cd[0] == "*":
+                                cd = '"${' + cd[1:] + '}"'
+                            else:
+                                cd = cd.replace("'", "")
+                                cd = cd.replace('"', "")
+                                cd = " " + cd
+                        else:
+                            cd = "$" + cd
                         e = pyVariable[i]
                         if e not in [None, "None"]:
                             remainder.pop(e, None)
-                            cd = channelVariables[i]
-                            if cd[0] in ["'", '"', "\n"]:
-                                if cd[0] == "*":
-                                    cd = '"${' + cd[1:] + '}"'
-                                else:
-                                    cd = cd.replace("'", "")
-                                    cd = cd.replace('"', "")
-                                    cd = " " + cd
-                            else:
-                                cd = "$" + cd
                             if e in self.cmdpars:
                                 cm = self.cmdpars[e]
                                 if cm == "":
@@ -197,6 +197,13 @@ class nextflowProcess:
                                         lazy.append(cd)
                                     else:
                                         pass  # flags.append("--" + e + " $" + cd)
+                        else:
+                            if e in self.cmdpars:
+                                cm = self.cmdpars[e]
+                                if cm == "":
+                                    positionals[e] = cd
+                                else:
+                                    flags.append(cm + cd)
                     if v[4]:
                         channelSource = " from params." + k
                         self.addedparams.append(k)
@@ -273,6 +280,13 @@ class nextflowProcess:
                             else:
                                 if e != "":
                                     self.flags.append("--" + e + cd)
+                        else:
+                            if e in self.cmdpars:
+                                cm = self.cmdpars[e]
+                                if cm == "":
+                                    positionals[e] = cd
+                                else:
+                                    flags.append(cm + cd)
                     if v[3] is None:
                         channelTransform = ""
                     else:
