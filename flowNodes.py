@@ -146,81 +146,84 @@ class nextflowProcess:
                             self.params[k] = None
                 remainder = self.params.copy()
             for k, v in specified_channels.items():
-                if k in self.inchannels:
-                    if type(v[1]) is tuple:
-                        channelVariables = []
-                        for e in v[1]:
-                            if e[0] == "*":
-                                channelVariables.append(e[1:])
-                            else:
-                                channelVariables.append(e)
-                        channelVariable = ", ".join(channelVariables)
-                    else:
-                        channelVariables = v[1].split(", ")
-                        channelVariable = v[1]
-                        for i, e in enumerate(channelVariables):
-                            if e[0] == "*":
-                                channelVariables[i] = e[1:]
-                            else:
-                                channelVariables[i] = e
-                    if channelVariable[0] == "*":
-                        channelVariable = channelVariable[1:]
-                    if type(v[2]) is not tuple:
-                        pyVariable = (v[2],)
-                    else:
-                        pyVariable = v[2]
-                    for i in range(len(pyVariable)):
-                        cd = channelVariables[i]
-                        if cd[0] in ["'", '"', "\n"]:
-                            if cd[0] == "*":
-                                cd = '"${' + cd[1:] + '}"'
-                            else:
-                                cd = cd.replace("'", "")
-                                cd = cd.replace('"', "")
-                                cd = " " + cd
+                if v[0] is None:
+                    pass
+                else:
+                    if k in self.inchannels:
+                        if type(v[1]) is tuple:
+                            channelVariables = []
+                            for e in v[1]:
+                                if e[0] == "*":
+                                    channelVariables.append(e[1:])
+                                else:
+                                    channelVariables.append(e)
+                            channelVariable = ", ".join(channelVariables)
                         else:
-                            cd = "$" + cd
-                        e = pyVariable[i]
-                        if e not in [None, "None"]:
-                            remainder.pop(e, None)
-                            if e in self.cmdpars:
-                                cm = self.cmdpars[e]
-                                if cm == "":
-                                    positionals[e] = cd
+                            channelVariables = v[1].split(", ")
+                            channelVariable = v[1]
+                            for i, e in enumerate(channelVariables):
+                                if e[0] == "*":
+                                    channelVariables[i] = e[1:]
                                 else:
-                                    flags.append(cm + cd)
+                                    channelVariables[i] = e
+                        if channelVariable[0] == "*":
+                            channelVariable = channelVariable[1:]
+                        if type(v[2]) is not tuple:
+                            pyVariable = (v[2],)
+                        else:
+                            pyVariable = v[2]
+                        for i in range(len(pyVariable)):
+                            cd = channelVariables[i]
+                            if cd[0] in ["'", '"', "\n"]:
+                                if cd[0] == "*":
+                                    cd = '"${' + cd[1:] + '}"'
+                                else:
+                                    cd = cd.replace("'", "")
+                                    cd = cd.replace('"', "")
+                                    cd = " " + cd
                             else:
-                                if e == "":
-                                    lazy.append(cd)
+                                cd = "$" + cd
+                            e = pyVariable[i]
+                            if e not in [None, "None"]:
+                                remainder.pop(e, None)
+                                if e in self.cmdpars:
+                                    cm = self.cmdpars[e]
+                                    if cm == "":
+                                        positionals[e] = cd
+                                    else:
+                                        flags.append(cm + cd)
                                 else:
-                                    if e[0] == "*":
+                                    if e == "":
                                         lazy.append(cd)
                                     else:
-                                        pass  # flags.append("--" + e + " $" + cd)
+                                        if e[0] == "*":
+                                            lazy.append(cd)
+                                        else:
+                                            pass  # flags.append("--" + e + " $" + cd)
+                            else:
+                                if e in self.cmdpars:
+                                    cm = self.cmdpars[e]
+                                    if cm == "":
+                                        positionals[e] = cd
+                                    else:
+                                        flags.append(cm + cd)
+                        if v[4]:
+                            channelSource = " from params." + k
+                            self.addedparams.append(k)
                         else:
-                            if e in self.cmdpars:
-                                cm = self.cmdpars[e]
-                                if cm == "":
-                                    positionals[e] = cd
-                                else:
-                                    flags.append(cm + cd)
-                    if v[4]:
-                        channelSource = " from params." + k
-                        self.addedparams.append(k)
-                    else:
-                        channelSource = " from " + k
-                    if v[3] is None:
-                        channelTransform = ""
-                    else:
-                        channelTransform = v[3]
-                    inputs += (
-                        v[0]
-                        + " "
-                        + channelVariable
-                        + channelSource
-                        + channelTransform
-                        + "\n"
-                    )
+                            channelSource = " from " + k
+                        if v[3] is None:
+                            channelTransform = ""
+                        else:
+                            channelTransform = v[3]
+                        inputs += (
+                            v[0]
+                            + " "
+                            + channelVariable
+                            + channelSource
+                            + channelTransform
+                            + "\n"
+                        )
             for k, v in remainder.items():
                 inputs += "val " + k + " from params." + k + "\n"
                 self.addedparams.append(k)
