@@ -120,9 +120,18 @@ class nextflowProcess:
             specified_channels = self.channel_specifications()
             if self.cmdpars is None:
                 self.cmdpars = dict()
+                params = dict()
                 for k, v in self.params.items():
-                    if k not in [None, ""]:
-                        self.cmdpars[k] = k + " "
+                    if isinstance(k, tuple):
+                        for i, q in enumerate(k):
+                            if q not in [None, ""]:
+                                params[q] = v[i]
+                                self.cmdpars[q] = q + " "
+                    else:
+                        if k not in [None, ""]:
+                            params[k] = v
+                            self.cmdpars[k] = k + " "
+                self.params = params
                 remainder = dict()
                 spc = self.inchannels + self.outchannels
                 for k, v in specified_channels.items():
@@ -181,10 +190,13 @@ class nextflowProcess:
                                 else:
                                     flags.append(cm + cd)
                             else:
-                                if e[0] == "*":
+                                if e == "":
                                     lazy.append(cd)
                                 else:
-                                    pass  # flags.append("--" + e + " $" + cd)
+                                    if e[0] == "*":
+                                        lazy.append(cd)
+                                    else:
+                                        pass  # flags.append("--" + e + " $" + cd)
                     if v[4]:
                         channelSource = " from params." + k
                         self.addedparams.append(k)
