@@ -800,7 +800,7 @@ def endScriptConneted(
     return textwrap.dedent(connected)
 
 
-def saveToScript(process, fn, dr, dependencies, modified_kws):
+def saveToScript(process, fn, dr, dependencies, modified_kws={}):
     l_imports = dependencies["imports"]
     l_packages = dependencies["inhouse_packages"]
     l_packages = [os.path.dirname(os.path.abspath(__file__))] + l_packages
