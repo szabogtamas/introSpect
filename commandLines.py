@@ -755,7 +755,6 @@ def startScriptConneted(
         + """')
 
     import introSpect
-    
     """
     )
     return connected[1:]
@@ -802,10 +801,13 @@ def endScriptConneted(
 
 
 def saveToScript(process, fn, dr, dependencies, modified_kws):
-    for p in [os.path.dirname(os.path.abspath(__file__))] + dependencies[
-        "inhouse_packages"
-    ]:
+    l_imports = dependencies["imports"]
+    l_packages = dependencies["inhouse_packages"]
+    l_packages = [os.path.dirname(os.path.abspath(__file__))] + l_packages
+    for i, p in enumerate(l_packages):
         packdir = p.split("/")[-1]
+        if i > 0:
+            l_imports = ["import " + packdir] + l_imports
         shutil.copytree(
             p,
             dr + "/packages/" + packdir,
@@ -813,7 +815,7 @@ def saveToScript(process, fn, dr, dependencies, modified_kws):
             ignore=shutil.ignore_patterns(".*"),
         )
     recipe = textwrap.dedent(startScriptConneted(dr + "/packages"))
-    recipe += "\n" + "\n".join(dependencies["imports"]) + "\n\n"
+    recipe += "\n" + "\n".join(l_imports) + "\n\n"
     recipe += textwrap.dedent(inspect.getsource(process).replace("self,", ""))
     for helper_fun in dependencies["helpers"]:
         recipe += "\n" + textwrap.dedent(inspect.getsource(helper_fun)) + "\n"
