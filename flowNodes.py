@@ -275,6 +275,8 @@ class nextflowProcess:
                         if e is not None:
                             remainder.pop(e, None)
                             cd = channelVariables[i]
+                            if cd.find("file(") == 0:
+                                cd = cd[5:-1]
                             if cd[0] in ["'", '"']:
                                 if cd.find("\\") < 0:
                                     cd = cd.replace("'", "")
