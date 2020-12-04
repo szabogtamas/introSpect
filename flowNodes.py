@@ -260,8 +260,12 @@ class nextflowProcess:
                         channelVariables = v[1]
                         channelVariable = ", ".join(channelVariables)
                     else:
-                        channelVariables = v[1].split(", ")
-                        channelVariable = v[1]
+                        if v[1].find("$") > -1:
+                            channelVariables = [v[1]]
+                            channelVariable = v[1]
+                        else:
+                            channelVariables = v[1].split(", ")
+                            channelVariable = v[1]
                     if type(v[2]) is not tuple:
                         pyVariable = (v[2],)
                     else:
@@ -272,9 +276,12 @@ class nextflowProcess:
                             remainder.pop(e, None)
                             cd = channelVariables[i]
                             if cd[0] in ["'", '"']:
-                                cd = cd.replace("'", "")
-                                cd = cd.replace('"', "")
-                                cd = " " + cd
+                                if cd.find("\\") < 0:
+                                    cd = cd.replace("'", "")
+                                    cd = cd.replace('"', "")
+                                    cd = " " + cd
+                                else:
+                                    cd = " " + cd[1:-1]
                             else:
                                 cd = " $" + cd
                             if e in self.cmdpars:
