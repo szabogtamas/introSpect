@@ -827,7 +827,7 @@ def cleanup(
         ".blg",
         ".tex",
         ".out",
-        "pynb",
+        #"pynb",
     ],
     pipeline: bool = True,
 ) -> str:
