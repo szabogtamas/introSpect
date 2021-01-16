@@ -37,6 +37,7 @@ class nextflowProcess:
             ),
         },
         manualDoc=None,
+        node_params=None,
     ):
         self.processname = self.__class__.__name__
         self.command = command
@@ -63,11 +64,14 @@ class nextflowProcess:
             modified_kws = (
                 dict()
             )  # Parameters added to argparse of the function. Output file names, for example.
-        self.capture = capture  # Converts the process into markdown of a notebook (easily modify plots)
-        self.capturepars = capturepars
         self.modified_kws = (
             modified_kws  # Keywords controling the outputs of the process function
         )
+        if node_params is None:
+            node_params = dict()
+        self.node_params = node_params
+        self.capture = capture  # Converts the process into markdown of a notebook (easily modify plots)
+        self.capturepars = capturepars
         self.cmdpars = None
         self.cmdouts = None
         self.cmdpreset = dict()
@@ -827,7 +831,7 @@ def cleanup(
         ".blg",
         ".tex",
         ".out",
-        #"pynb",
+        # "pynb",
     ],
     pipeline: bool = True,
 ) -> str:
