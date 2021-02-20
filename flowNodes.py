@@ -804,12 +804,20 @@ def nonCondaCopy(
     # TODO: Also add a procedure that handles download from GitHub
     for p in inhouse_packages:
         packdir = p.split("/")[-1]
-        shutil.copytree(
-            p,
-            dr + "/" + packdir,
-            dirs_exist_ok=True,
-            ignore=shutil.ignore_patterns(".*"),
-        )
+        try:
+            shutil.copytree(
+                p,
+                dr + "/" + packdir,
+                dirs_exist_ok=True,
+                ignore=shutil.ignore_patterns(".*"),
+            )
+        except:
+            shutil.rmtree(dr + "/" + packdir)
+            shutil.copytree(
+                p,
+                dr + "/" + packdir,
+                ignore=shutil.ignore_patterns(".*"),
+            )
     return
 
 
