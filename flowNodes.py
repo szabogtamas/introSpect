@@ -660,13 +660,13 @@ def channelNodes(
         f.write(flowBody)
     processSettings = "process {\n"
     for k, v in labelSettings.items():
-        s = "    withLabel:" + k + "     {\n"
+        s = "    withLabel: " + k + " {\n"
         for w in v:
             s += "        " + w + "\n"
         processSettings += s + "    }\n"
     for k, v in process_settings.items():
         if v is not None:
-            s = "    withName:" + k + "     {\n"
+            s = "    withName: " + k + " {\n"
             for q, w in v.items():
                 if isinstance(w, str):
                     w = "'" + w + "'"
