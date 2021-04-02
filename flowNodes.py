@@ -593,6 +593,9 @@ def channelNodes(
             enabled = true
             autoMounts = true
         }
+        conda {
+            createTimeout = '300 min'
+        }
         """
     if containerPaths is None:
         containerPaths = dict()
