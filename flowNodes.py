@@ -76,6 +76,7 @@ class nextflowProcess:
         self.cmdouts = None
         self.cmdpreset = dict()
         self.addedparams = []
+        self.command_locally = True
         self.customize_features()
 
         if container is not None:
